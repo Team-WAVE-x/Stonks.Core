@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Stonks.Core.Class;
-using Stonks.Core.Module;
 
 using System;
 using System.Collections.Generic;
@@ -24,16 +23,29 @@ namespace Stonks.Core
 {
     public class Program
     {
-        private Timer Timer;
-        private IServiceProvider Services;
-        public readonly static Setting Setting = SettingModule.GetSettingInfo();
-        public readonly static CommandService Commands = new CommandService(new CommandServiceConfig { LogLevel = LogSeverity.Debug });
-        public readonly static DiscordSocketClient Client = new DiscordSocketClient(new DiscordSocketConfig { LogLevel = LogSeverity.Debug });
+        private Timer timer;
+        private IServiceProvider service;
 
-        public static Stopwatch UptimeStopwatch = new Stopwatch();
-        public static List<ulong> GamingUserList = new List<ulong>();
-        public static List<DateTimeOffset> StackCooldownTimer = new List<DateTimeOffset>();
-        public static List<SocketGuildUser> StackCooldownTarget = new List<SocketGuildUser>();
+        public readonly static Setting Setting;
+        public readonly static CommandService Commands;
+        public readonly static DiscordSocketClient Client;
+
+        public static Stopwatch UptimeStopwatch;
+        public static List<ulong> GamingUserList;
+        public static List<DateTimeOffset> StackCooldownTimer;
+        public static List<SocketGuildUser> StackCooldownTarget;
+
+        static Program()
+        {
+            Setting = new Setting();
+            Commands = new CommandService(new CommandServiceConfig { LogLevel = LogSeverity.Debug });
+            Client = new DiscordSocketClient(new DiscordSocketConfig { LogLevel = LogSeverity.Debug });
+
+            UptimeStopwatch = new Stopwatch();
+            GamingUserList = new List<ulong>();
+            StackCooldownTimer = new List<DateTimeOffset>();
+            StackCooldownTarget = new List<SocketGuildUser>();
+        }
 
         private static void Main(string[] args)
         {
@@ -42,6 +54,8 @@ namespace Stonks.Core
 
         public async Task MainAsync()
         {
+            Setting.GetConfig($"{System.AppDomain.CurrentDomain.BaseDirectory}\\Setting.json");
+
             Client.Log += OnClientLogReceived;
             Client.ReactionAdded += OnReactionAdded;
             Client.MessageReceived += OnClientMessage;
@@ -52,23 +66,23 @@ namespace Stonks.Core
 
             UptimeStopwatch.Start();
 
-            Timer = new Timer
+            timer = new Timer
             {
-                Interval = 600000
+                Interval = 600000,
             };
-            Timer.Elapsed += new ElapsedEventHandler(TimerElapsed);
-            Timer.Start();
+            timer.Elapsed += new ElapsedEventHandler(TimerElapsed);
+            timer.Start();
 
-            await Client.LoginAsync(TokenType.Bot, Setting.Token);
+            await Client.LoginAsync(TokenType.Bot, Setting.Config.Token);
             await Client.StartAsync();
 
-            Services = new ServiceCollection()
+            service = new ServiceCollection()
                 .AddSingleton(Client)
                 .AddSingleton<InteractiveService>()
                 .BuildServiceProvider();
 
-            await Client.SetGameAsync($"{Setting.Prefix}도움말", null, ActivityType.Playing);
-            await Commands.AddModulesAsync(Assembly.GetEntryAssembly(), Services);
+            await Client.SetGameAsync($"{Setting.Config.Prefix}도움말", null, ActivityType.Playing);
+            await Commands.AddModulesAsync(Assembly.GetEntryAssembly(), service);
             await Task.Delay(-1).ConfigureAwait(false);
         }
 
@@ -87,12 +101,12 @@ namespace Stonks.Core
                 var data = new { servers = Client.Guilds.Count };
                 string json = JsonConvert.SerializeObject(data);
 
-                wc.Headers.Add(HttpRequestHeader.Authorization, Setting.KoreanbotsToken);
+                wc.Headers.Add(HttpRequestHeader.Authorization, Setting.Config.KoreanbotsToken);
                 wc.Headers.Set(HttpRequestHeader.ContentType, "application/json");
 
                 try
                 {
-                    wc.UploadString($"https://koreanbots.dev/api/v2/bots/{Setting.KoreanbotsID}/stats", json);
+                    wc.UploadString($"https://koreanbots.dev/api/v2/bots/{Setting.Config.KoreanbotsId}/stats", json);
                 }
                 catch (WebException ex)
                 {
@@ -152,18 +166,18 @@ namespace Stonks.Core
                 Timestamp = DateTimeOffset.Now
             };
 
-            await (context.Client.GetChannelAsync(Setting.ErrorLogChannelID).Result as ISocketMessageChannel).SendMessageAsync(embed: builder.Build());
+            await (context.Client.GetChannelAsync(Setting.Config.ErrorLogChannelId).Result as ISocketMessageChannel).SendMessageAsync(embed: builder.Build());
         }
 
         private async Task OnClientMessage(SocketMessage rawMessage)
         {
             int argPos = 0;
 
-            if (!(rawMessage is SocketUserMessage message) || message.Source != MessageSource.User || rawMessage.Channel is IPrivateChannel || GamingUserList.Contains(rawMessage.Author.Id) || !message.HasStringPrefix(Setting.Prefix, ref argPos))
+            if (!(rawMessage is SocketUserMessage message) || message.Source != MessageSource.User || rawMessage.Channel is IPrivateChannel || GamingUserList.Contains(rawMessage.Author.Id) || !message.HasStringPrefix(Setting.Config.Prefix, ref argPos))
                 return;
 
             SocketCommandContext context = new SocketCommandContext(Client, message);
-            await Commands.ExecuteAsync(context, argPos, Services);
+            await Commands.ExecuteAsync(context, argPos, service);
         }
 
         private Task OnClientLogReceived(LogMessage message)

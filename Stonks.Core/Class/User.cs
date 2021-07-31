@@ -4,7 +4,6 @@ using System;
 using System.Data;
 
 using static Stonks.Core.Module.GameModule;
-using static Stonks.Core.Module.SettingModule;
 
 namespace Stonks.Core.Class
 {
@@ -23,7 +22,7 @@ namespace Stonks.Core.Class
 
             try
             {
-                using (MySqlConnection sCon = new MySqlConnection(Program.Setting.ConnectionString))
+                using (MySqlConnection sCon = new MySqlConnection(Program.Setting.Config.ConnectionString))
                 {
                     sCon.Open();
 
@@ -64,7 +63,7 @@ namespace Stonks.Core.Class
 
         public void AddMoney(ulong money)
         {
-            using (MySqlConnection sCon = new MySqlConnection(Program.Setting.ConnectionString))
+            using (MySqlConnection sCon = new MySqlConnection(Program.Setting.Config.ConnectionString))
             {
                 sCon.Open();
 
@@ -86,7 +85,7 @@ namespace Stonks.Core.Class
         {
             if (Money > 0)
             {
-                using (MySqlConnection sCon = new MySqlConnection(Program.Setting.ConnectionString))
+                using (MySqlConnection sCon = new MySqlConnection(Program.Setting.Config.ConnectionString))
                 {
                     sCon.Open();
 
@@ -107,7 +106,7 @@ namespace Stonks.Core.Class
 
         public void SetScore(int round)
         {
-            using (MySqlConnection sCon = new MySqlConnection(Program.Setting.ConnectionString))
+            using (MySqlConnection sCon = new MySqlConnection(Program.Setting.Config.ConnectionString))
             {
                 sCon.Open();
 

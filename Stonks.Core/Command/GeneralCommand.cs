@@ -33,7 +33,7 @@ namespace Stonks.Core.Command
             {
                 Title = "🏓 Pong!",
                 Color = pingColor,
-                Fields = new List<EmbedFieldBuilder> 
+                Fields = new List<EmbedFieldBuilder>
                 {
                     new EmbedFieldBuilder{ Name = "Gateway Ping", Value = $"`{Context.Client.Latency}ms`" },
                     new EmbedFieldBuilder{ Name = "Client Ping", Value = $"`{latency.TotalMilliseconds}ms`" }
@@ -72,8 +72,8 @@ namespace Stonks.Core.Command
             builders[0].WithColor(Color.Red);
             builders[0].WithFooter(new EmbedFooterBuilder
             {
-                IconUrl = Context.Client.GetUser(Program.Setting.DeveloperID).GetAvatarUrl(ImageFormat.Png, 128),
-                Text = $"{Context.Client.GetUser(Program.Setting.DeveloperID).Username}#{Context.Client.GetUser(Program.Setting.DeveloperID).Discriminator} 제작"
+                IconUrl = Context.Client.GetUser(Program.Setting.Config.DeveloperId).GetAvatarUrl(ImageFormat.Png, 128),
+                Text = $"{Context.Client.GetUser(Program.Setting.Config.DeveloperId).Username}#{Context.Client.GetUser(Program.Setting.Config.DeveloperId).Discriminator} 제작"
             });
             builders[0].WithTimestamp(DateTimeOffset.Now);
 
@@ -82,8 +82,8 @@ namespace Stonks.Core.Command
             builders[1].WithColor(Color.Orange);
             builders[1].WithFooter(new EmbedFooterBuilder
             {
-                IconUrl = Context.Client.GetUser(Program.Setting.DeveloperID).GetAvatarUrl(ImageFormat.Png, 128),
-                Text = $"{Context.Client.GetUser(Program.Setting.DeveloperID).Username}#{Context.Client.GetUser(Program.Setting.DeveloperID).Discriminator} 제작"
+                IconUrl = Context.Client.GetUser(Program.Setting.Config.DeveloperId).GetAvatarUrl(ImageFormat.Png, 128),
+                Text = $"{Context.Client.GetUser(Program.Setting.Config.DeveloperId).Username}#{Context.Client.GetUser(Program.Setting.Config.DeveloperId).Discriminator} 제작"
             });
             builders[1].WithTimestamp(DateTimeOffset.Now);
 
@@ -92,8 +92,8 @@ namespace Stonks.Core.Command
             builders[2].WithColor(Color.Green);
             builders[2].WithFooter(new EmbedFooterBuilder
             {
-                IconUrl = Context.Client.GetUser(Program.Setting.DeveloperID).GetAvatarUrl(ImageFormat.Png, 128),
-                Text = $"{Context.Client.GetUser(Program.Setting.DeveloperID).Username}#{Context.Client.GetUser(Program.Setting.DeveloperID).Discriminator} 제작"
+                IconUrl = Context.Client.GetUser(Program.Setting.Config.DeveloperId).GetAvatarUrl(ImageFormat.Png, 128),
+                Text = $"{Context.Client.GetUser(Program.Setting.Config.DeveloperId).Username}#{Context.Client.GetUser(Program.Setting.Config.DeveloperId).Discriminator} 제작"
             });
             builders[2].WithTimestamp(DateTimeOffset.Now);
 
@@ -102,8 +102,8 @@ namespace Stonks.Core.Command
             builders[3].WithColor(Color.Blue);
             builders[3].WithFooter(new EmbedFooterBuilder
             {
-                IconUrl = Context.Client.GetUser(Program.Setting.DeveloperID).GetAvatarUrl(ImageFormat.Png, 128),
-                Text = $"{Context.Client.GetUser(Program.Setting.DeveloperID).Username}#{Context.Client.GetUser(Program.Setting.DeveloperID).Discriminator} 제작"
+                IconUrl = Context.Client.GetUser(Program.Setting.Config.DeveloperId).GetAvatarUrl(ImageFormat.Png, 128),
+                Text = $"{Context.Client.GetUser(Program.Setting.Config.DeveloperId).Username}#{Context.Client.GetUser(Program.Setting.Config.DeveloperId).Discriminator} 제작"
             });
             builders[3].WithTimestamp(DateTimeOffset.Now);
 
@@ -114,7 +114,7 @@ namespace Stonks.Core.Command
                 {
                     foreach (var item in builders)
                     {
-                        item.AddField($"{Program.Setting.Prefix}{command.Name}", command.Summary);
+                        item.AddField($"{Program.Setting.Config.Prefix}{command.Name}", command.Summary);
                     }
                 }
             }

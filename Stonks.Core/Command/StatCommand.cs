@@ -17,11 +17,11 @@ using Discord;
 
 namespace Stonks.Core.Command
 {
-    public  class StatCommand : InteractiveBase<SocketCommandContext>
+    public class StatCommand : InteractiveBase<SocketCommandContext>
     {
         [Command("카스", RunMode = RunMode.Async)]
         [Summary("카운터스트라이크 : 글로벌 오펜시브 유저의 정보를 가져옵니다.")]
-        public async Task CSAsync([Remainder]string id = "")
+        public async Task CSAsync([Remainder] string id = "")
         {
             //https://tracker.gg/developers/docs/titles/csgo
 
@@ -36,7 +36,7 @@ namespace Stonks.Core.Command
             //유저 찾기
             using (WebClient client = new WebClient())
             {
-                client.Headers.Add("TRN-Api-Key", Program.Setting.TRNToken);
+                client.Headers.Add("TRN-Api-Key", Program.Setting.Config.TrnToken);
                 client.Headers.Add(HttpRequestHeader.Accept, "application/json");
 
                 string json = client.DownloadString($"https://public-api.tracker.gg/v2/csgo/standard/search?platform=steam&query={id}");
@@ -58,7 +58,7 @@ namespace Stonks.Core.Command
             {
                 Stat stat = new Stat();
 
-                client.Headers.Add("TRN-Api-Key", Program.Setting.TRNToken);
+                client.Headers.Add("TRN-Api-Key", Program.Setting.Config.TrnToken);
                 client.Headers.Add(HttpRequestHeader.Accept, "application/json");
 
                 try

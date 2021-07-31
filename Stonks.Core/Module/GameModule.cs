@@ -17,7 +17,7 @@ namespace Stonks.Core.Module
         /// <param name="userid">추가할 유저 아이디</param>
         public static void AddNewUser(ulong guildid, ulong userid)
         {
-            using (MySqlConnection sCon = new MySqlConnection(Program.Setting.ConnectionString))
+            using (MySqlConnection sCon = new MySqlConnection(Program.Setting.Config.ConnectionString))
             {
                 sCon.Open();
 
@@ -40,7 +40,7 @@ namespace Stonks.Core.Module
         /// <param name="guildid">길드 아이디</param>
         public static void AddNewGuild(ulong guildid)
         {
-            using (MySqlConnection sCon = new MySqlConnection(Program.Setting.ConnectionString))
+            using (MySqlConnection sCon = new MySqlConnection(Program.Setting.Config.ConnectionString))
             {
                 sCon.Open();
 
@@ -68,7 +68,7 @@ namespace Stonks.Core.Module
 
             try
             {
-                using (MySqlConnection sCon = new MySqlConnection(Program.Setting.ConnectionString))
+                using (MySqlConnection sCon = new MySqlConnection(Program.Setting.Config.ConnectionString))
                 {
                     sCon.Open();
 
@@ -109,7 +109,7 @@ namespace Stonks.Core.Module
         {
             List<User> users = new List<User>();
 
-            using (MySqlConnection sCon = new MySqlConnection(Program.Setting.ConnectionString))
+            using (MySqlConnection sCon = new MySqlConnection(Program.Setting.Config.ConnectionString))
             {
                 sCon.Open();
 
@@ -143,7 +143,7 @@ namespace Stonks.Core.Module
         {
             string result = string.Empty;
 
-            using (MySqlConnection sCon = new MySqlConnection(Program.Setting.ConnectionString))
+            using (MySqlConnection sCon = new MySqlConnection(Program.Setting.Config.ConnectionString))
             {
                 sCon.Open();
 
@@ -177,7 +177,7 @@ namespace Stonks.Core.Module
         {
             List<string> result = new List<string>();
 
-            using (MySqlConnection sCon = new MySqlConnection(Program.Setting.ConnectionString))
+            using (MySqlConnection sCon = new MySqlConnection(Program.Setting.Config.ConnectionString))
             {
                 sCon.Open();
 
@@ -212,7 +212,7 @@ namespace Stonks.Core.Module
         {
             bool result = false;
 
-            using (MySqlConnection sCon = new MySqlConnection(Program.Setting.ConnectionString))
+            using (MySqlConnection sCon = new MySqlConnection(Program.Setting.Config.ConnectionString))
             {
                 sCon.Open();
 
@@ -244,7 +244,7 @@ namespace Stonks.Core.Module
         {
             List<string> words = new List<string>();
 
-            using (MySqlConnection sCon = new MySqlConnection(Program.Setting.ConnectionString))
+            using (MySqlConnection sCon = new MySqlConnection(Program.Setting.Config.ConnectionString))
             {
                 sCon.Open();
 

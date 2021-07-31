@@ -16,7 +16,7 @@ namespace Stonks.Core.Command
         [Command("재시작", RunMode = RunMode.Async)]
         public async Task RestartAsync()
         {
-            if (Context.User.Id == Program.Setting.DeveloperID)
+            if (Context.User.Id == Program.Setting.Config.DeveloperId)
             {
                 EmbedBuilder builder = new EmbedBuilder
                 {
@@ -83,7 +83,7 @@ namespace Stonks.Core.Command
         [Command("업타임", RunMode = RunMode.Async)]
         public async Task UptimeAsync()
         {
-            if (Context.User.Id == Program.Setting.DeveloperID)
+            if (Context.User.Id == Program.Setting.Config.DeveloperId)
             {
                 TimeSpan uptime = TimeSpan.FromMilliseconds(Program.UptimeStopwatch.ElapsedMilliseconds);
 
@@ -112,7 +112,7 @@ namespace Stonks.Core.Command
         [Command("공지", RunMode = RunMode.Async)]
         public async Task NoticeAsync()
         {
-            if (Context.User.Id == Program.Setting.DeveloperID)
+            if (Context.User.Id == Program.Setting.Config.DeveloperId)
             {
                 await Context.Channel.SendMessageAsync("공지의 내용을 입력해 주십시오.");
                 var response = await NextMessageAsync(true, true, TimeSpan.FromMinutes(10));
@@ -147,8 +147,8 @@ namespace Stonks.Core.Command
                                 Color = Color.Green,
                                 Footer = new EmbedFooterBuilder
                                 {
-                                    IconUrl = Context.Client.GetUser(Program.Setting.DeveloperID).GetAvatarUrl(ImageFormat.Png, 128),
-                                    Text = $"{Context.Client.GetUser(Program.Setting.DeveloperID).Username}#{Context.Client.GetUser(Program.Setting.DeveloperID).Discriminator}"
+                                    IconUrl = Context.Client.GetUser(Program.Setting.Config.DeveloperId).GetAvatarUrl(ImageFormat.Png, 128),
+                                    Text = $"{Context.Client.GetUser(Program.Setting.Config.DeveloperId).Username}#{Context.Client.GetUser(Program.Setting.Config.DeveloperId).Discriminator}"
                                 },
                                 Timestamp = DateTimeOffset.Now
                             };

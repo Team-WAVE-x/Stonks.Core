@@ -36,9 +36,9 @@ namespace Stonks.Core.Command
 
             if (Program.StackCooldownTarget.Contains(Context.User as SocketGuildUser))
             {
-                if (Program.StackCooldownTimer[Program.StackCooldownTarget.IndexOf(Context.Message.Author as SocketGuildUser)].AddSeconds(15) >= DateTimeOffset.Now)
+                if (Program.StackCooldownTimer[Program.StackCooldownTarget.IndexOf(Context.Message.Author as SocketGuildUser)].AddMinutes(1) >= DateTimeOffset.Now)
                 {
-                    int secondsLeft = (int)(Program.StackCooldownTimer[Program.StackCooldownTarget.IndexOf(Context.Message.Author as SocketGuildUser)].AddSeconds(15) - DateTimeOffset.Now).TotalSeconds;
+                    int secondsLeft = (int)(Program.StackCooldownTimer[Program.StackCooldownTarget.IndexOf(Context.Message.Author as SocketGuildUser)].AddMinutes(1) - DateTimeOffset.Now).TotalSeconds;
                     await Context.Channel.SendMessageAsync($"<@{Context.User.Id}>님, 용돈을 다시 받을려면 {secondsLeft}초 기다려야 해요!");
                 }
                 else
@@ -80,7 +80,6 @@ namespace Stonks.Core.Command
         public async Task RankingAsync()
         {
             RestUserMessage message = await Context.Channel.SendMessageAsync("🧮 계산중...");
-
             List<User> users = GameModule.GetRanking(Context.Guild.Id, 20);
 
             EmbedBuilder builder = new EmbedBuilder();
@@ -146,7 +145,7 @@ namespace Stonks.Core.Command
         [Command("슬롯머신", RunMode = RunMode.Async)]
         [Alias("도박")]
         [Summary("슬롯머신 게임을 시작합니다.")]
-        public async Task SlotMachineAsync([Remainder]string money = "")
+        public async Task SlotMachineAsync([Remainder] string money = "")
         {
             EmbedBuilder builder = new EmbedBuilder();
             User user = new User(Context.Guild.Id, Context.User.Id);
