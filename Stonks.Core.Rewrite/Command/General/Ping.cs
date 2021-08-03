@@ -9,7 +9,7 @@ namespace Stonks.Core.Rewrite.Command.General
 {
     public class Ping : ModuleBase<SocketCommandContext>
     {
-        [Command("핑", RunMode = RunMode.Async)]
+        [Command("핑")]
         public async Task PingAsync()
         {
             var message = await Context.Channel.SendMessageAsync($"Pinging...");

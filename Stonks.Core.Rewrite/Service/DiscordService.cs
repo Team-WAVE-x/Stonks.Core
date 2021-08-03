@@ -42,8 +42,12 @@ namespace Stonks.Core.Rewrite.Service
         {
             return new ServiceCollection()
                 .AddSingleton<CommandHandlingService>()
-                .AddSingleton<DiscordSocketClient>()
-                .AddSingleton<CommandService>()
+                .AddSingleton<DiscordSocketClient>(x =>
+                    ActivatorUtilities.CreateInstance<DiscordSocketClient>(x, new DiscordSocketConfig { LogLevel = LogSeverity.Debug })
+                 )
+                .AddSingleton<CommandService>(x =>
+                    ActivatorUtilities.CreateInstance<CommandService>(x, new CommandServiceConfig { DefaultRunMode = RunMode.Sync, LogLevel = LogSeverity.Debug })
+                 )
                 .AddSingleton<Setting>()
                 .BuildServiceProvider();
         }
