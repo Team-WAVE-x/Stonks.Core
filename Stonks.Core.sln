@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stonks.Core.Rewrite", "Stonks.Core.Rewrite\Stonks.Core.Rewrite.csproj", "{3501046F-CEE1-4201-BFA8-B0408BCF5180}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{42EC924C-5717-4D72-AB7A-3023DEEBAEBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42EC924C-5717-4D72-AB7A-3023DEEBAEBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42EC924C-5717-4D72-AB7A-3023DEEBAEBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3501046F-CEE1-4201-BFA8-B0408BCF5180}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3501046F-CEE1-4201-BFA8-B0408BCF5180}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3501046F-CEE1-4201-BFA8-B0408BCF5180}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3501046F-CEE1-4201-BFA8-B0408BCF5180}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

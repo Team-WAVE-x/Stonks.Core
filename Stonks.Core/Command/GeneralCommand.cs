@@ -3,7 +3,7 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.Rest;
 
-using Stonks.Core.Module;
+using Stonks.Core.Class;
 
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,6 @@ namespace Stonks.Core.Command
     public class GeneralCommand : InteractiveBase<SocketCommandContext>
     {
         [Command("핑", RunMode = RunMode.Async)]
-        [Summary("서버와의 연결 지연시간을 확인합니다.")]
         public async Task PingAsync()
         {
             RestUserMessage message = await Context.Channel.SendMessageAsync($"Pinging...");
@@ -46,115 +45,24 @@ namespace Stonks.Core.Command
             });
         }
 
-        //이거 빨리 고쳐야함
-        [Command("도움", RunMode = RunMode.Async)]
-        [Alias("도움말")]
-        [Summary("이 메시지를 표시합니다.")]
+        [Command("도움말", RunMode = RunMode.Async)]
         public async Task HelpAsync()
         {
-            //변수 설정
-            const int MIN_PAGE = 0;
-            const int MAX_PAGE = 4;
+            var groups = Program.Setting.CommandGroup;
 
-            int page = 0;
+            EmbedBuilder commandGroup = new EmbedBuilder();
+            EmbedBuilder[] commandPages = new EmbedBuilder[groups.Length];
+            commandPages.InitializeArray();
 
-            EmbedBuilder[] builders = new EmbedBuilder[MAX_PAGE];
-            List<CommandInfo> commands = Program.Commands.Commands.ToList();
+            //메인 페이지
+            commandGroup.WithTitle("📜 도움말");
+            commandGroup.WithColor(Color.Teal);
+            commandGroup.WithDescription("확인하고 싶은 명령어의 그룹을 선택해 주세요.");
 
-            //builders 변수 초기화
-            for (int i = 0; i < MAX_PAGE; i++)
+            foreach (var item in groups)
             {
-                builders[i] = new EmbedBuilder();
+                commandGroup.AddField(item.Title, item.Description);
             }
-
-            //게임 명령어 임베드
-            builders[0].WithTitle("🎮 놀이 명령어");
-            builders[0].WithColor(Color.Red);
-            builders[0].WithFooter(new EmbedFooterBuilder
-            {
-                IconUrl = Context.Client.GetUser(Program.Setting.Config.DeveloperId).GetAvatarUrl(ImageFormat.Png, 128),
-                Text = $"{Context.Client.GetUser(Program.Setting.Config.DeveloperId).Username}#{Context.Client.GetUser(Program.Setting.Config.DeveloperId).Discriminator} 제작"
-            });
-            builders[0].WithTimestamp(DateTimeOffset.Now);
-
-            //기본 명령어 임베드
-            builders[1].WithTitle("📄 기본 명령어");
-            builders[1].WithColor(Color.Orange);
-            builders[1].WithFooter(new EmbedFooterBuilder
-            {
-                IconUrl = Context.Client.GetUser(Program.Setting.Config.DeveloperId).GetAvatarUrl(ImageFormat.Png, 128),
-                Text = $"{Context.Client.GetUser(Program.Setting.Config.DeveloperId).Username}#{Context.Client.GetUser(Program.Setting.Config.DeveloperId).Discriminator} 제작"
-            });
-            builders[1].WithTimestamp(DateTimeOffset.Now);
-
-            //NSFW 명령어 임베드
-            builders[2].WithTitle("🔞 NSFW 명령어");
-            builders[2].WithColor(Color.Green);
-            builders[2].WithFooter(new EmbedFooterBuilder
-            {
-                IconUrl = Context.Client.GetUser(Program.Setting.Config.DeveloperId).GetAvatarUrl(ImageFormat.Png, 128),
-                Text = $"{Context.Client.GetUser(Program.Setting.Config.DeveloperId).Username}#{Context.Client.GetUser(Program.Setting.Config.DeveloperId).Discriminator} 제작"
-            });
-            builders[2].WithTimestamp(DateTimeOffset.Now);
-
-            //전적 명령어 임베드
-            builders[3].WithTitle("📈 전적 명령어");
-            builders[3].WithColor(Color.Blue);
-            builders[3].WithFooter(new EmbedFooterBuilder
-            {
-                IconUrl = Context.Client.GetUser(Program.Setting.Config.DeveloperId).GetAvatarUrl(ImageFormat.Png, 128),
-                Text = $"{Context.Client.GetUser(Program.Setting.Config.DeveloperId).Username}#{Context.Client.GetUser(Program.Setting.Config.DeveloperId).Discriminator} 제작"
-            });
-            builders[3].WithTimestamp(DateTimeOffset.Now);
-
-            //명령어 가져오기
-            foreach (CommandInfo command in commands)
-            {
-                if (command.Module.Name != "AdminCommand")
-                {
-                    foreach (var item in builders)
-                    {
-                        item.AddField($"{Program.Setting.Config.Prefix}{command.Name}", command.Summary);
-                    }
-                }
-            }
-
-            //전송
-            RestUserMessage message = await Context.Channel.SendMessageAsync(embed: builders[0].Build());
-
-            //대리자
-            Action BackAction = async delegate
-            {
-                page--;
-
-                if (page == -1)
-                {
-                    page = MIN_PAGE;
-                }
-
-                await message.ModifyAsync(msg => msg.Embed = builders[page].Build());
-            };
-
-            Action ForwardAction = async delegate
-            {
-                page++;
-
-                if (page == MAX_PAGE)
-                {
-                    page = 1;
-                }
-
-                await message.ModifyAsync(msg => msg.Embed = builders[page].Build());
-            };
-
-            ReactMessageModule.CreateReactMessage(
-                msg: message,
-                emoji: new List<IEmote> { new Emoji("⬅️"), new Emoji("➡️") },
-                action: new List<Action> { BackAction, ForwardAction },
-                timeSpan: TimeSpan.FromMinutes(1),
-                userId: Context.Message.Author.Id,
-                guildId: Context.Guild.Id
-            );
         }
     }
 }

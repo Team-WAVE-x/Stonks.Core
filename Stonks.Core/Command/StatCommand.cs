@@ -20,7 +20,6 @@ namespace Stonks.Core.Command
     public class StatCommand : InteractiveBase<SocketCommandContext>
     {
         [Command("카스", RunMode = RunMode.Async)]
-        [Summary("카운터스트라이크 : 글로벌 오펜시브 유저의 정보를 가져옵니다.")]
         public async Task CSAsync([Remainder] string id = "")
         {
             //https://tracker.gg/developers/docs/titles/csgo

@@ -18,7 +18,6 @@ namespace Stonks.Core.Command
     public class NsfwCommand : InteractiveBase<SocketCommandContext>
     {
         [Command("겔부루", RunMode = RunMode.Async)]
-        [Summary("겔부루에서 랜덤한 이미지를 가져옵니다. (태그는 공백으로 구분합니다)")]
         public async Task GelbooruAsync([Remainder] string tags = "")
         {
             if (!(Context.Channel as ITextChannel).IsNsfw)

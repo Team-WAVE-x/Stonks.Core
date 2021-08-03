@@ -22,7 +22,6 @@ namespace Stonks.Core.Command
     public class GameCommand : InteractiveBase<SocketCommandContext>
     {
         [Command("용돈", RunMode = RunMode.Async)]
-        [Summary("용돈을 지급합니다.")]
         public async Task CashAsync()
         {
             async void giveMoney()
@@ -56,7 +55,6 @@ namespace Stonks.Core.Command
         }
 
         [Command("내돈", RunMode = RunMode.Async)]
-        [Summary("자신의 돈을 확인합니다.")]
         public async Task MoneyAsync()
         {
             User user = new User(Context.Guild.Id, Context.User.Id);
@@ -76,7 +74,6 @@ namespace Stonks.Core.Command
         }
 
         [Command("랭킹", RunMode = RunMode.Async)]
-        [Summary("전체 랭킹을 확인합니다.")]
         public async Task RankingAsync()
         {
             RestUserMessage message = await Context.Channel.SendMessageAsync("🧮 계산중...");
@@ -109,7 +106,6 @@ namespace Stonks.Core.Command
         }
 
         [Command("끝말잇기 랭킹", RunMode = RunMode.Async)]
-        [Summary("끝말잇기 랭킹을 확인합니다.")]
         public async Task RoundRankingAsync()
         {
             RestUserMessage message = await Context.Channel.SendMessageAsync("🧮 계산중...");
@@ -143,8 +139,6 @@ namespace Stonks.Core.Command
         }
 
         [Command("슬롯머신", RunMode = RunMode.Async)]
-        [Alias("도박")]
-        [Summary("슬롯머신 게임을 시작합니다.")]
         public async Task SlotMachineAsync([Remainder] string money = "")
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -293,7 +287,6 @@ namespace Stonks.Core.Command
         }
 
         [Command("끝말잇기", RunMode = RunMode.Async)]
-        [Summary("1대1 끝말잇기를 시작합니다.")]
         public async Task WordAsync()
         {
             //각종 필요한 변수를 정의함
@@ -418,7 +411,6 @@ namespace Stonks.Core.Command
         }
 
         [Command("업다운", RunMode = RunMode.Async)]
-        [Summary("업다운 게임을 합니다.")]
         public async Task UpDownGameAsync()
         {
             Random rd = new Random();
@@ -478,7 +470,6 @@ namespace Stonks.Core.Command
         }
 
         [Command("고양이", RunMode = RunMode.Async)]
-        [Summary("귀여운 고양이 사진을 봅니다.")]
         public async Task CatAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
