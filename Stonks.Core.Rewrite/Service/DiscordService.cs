@@ -1,8 +1,11 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.Net;
 using Discord.WebSocket;
 
 using Microsoft.Extensions.DependencyInjection;
+
+using Newtonsoft.Json;
 
 using Stonks.Core.Rewrite.Class;
 
@@ -42,12 +45,9 @@ namespace Stonks.Core.Rewrite.Service
         {
             return new ServiceCollection()
                 .AddSingleton<CommandHandlingService>()
-                .AddSingleton<DiscordSocketClient>(x =>
-                    ActivatorUtilities.CreateInstance<DiscordSocketClient>(x, new DiscordSocketConfig { LogLevel = LogSeverity.Debug })
-                 )
-                .AddSingleton<CommandService>(x =>
-                    ActivatorUtilities.CreateInstance<CommandService>(x, new CommandServiceConfig { DefaultRunMode = RunMode.Sync, LogLevel = LogSeverity.Debug })
-                 )
+                .AddSingleton<DiscordSocketClient>(x => ActivatorUtilities.CreateInstance<DiscordSocketClient>(x, new DiscordSocketConfig { LogLevel = LogSeverity.Debug }))
+                .AddSingleton<CommandService>(x => ActivatorUtilities.CreateInstance<CommandService>(x, new CommandServiceConfig { DefaultRunMode = RunMode.Sync, LogLevel = LogSeverity.Debug }))
+                .AddSingleton<SqlService>()
                 .AddSingleton<Setting>()
                 .BuildServiceProvider();
         }
