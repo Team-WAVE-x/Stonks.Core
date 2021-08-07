@@ -1,11 +1,8 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-
 using Microsoft.Extensions.DependencyInjection;
-
 using Stonks.Core.Rewrite.Class;
-
 using System;
 using System.Reflection;
 using System.Threading.Tasks;

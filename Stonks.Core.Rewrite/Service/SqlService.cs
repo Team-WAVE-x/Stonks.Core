@@ -1,9 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-
 using MySql.Data.MySqlClient;
-
 using Stonks.Core.Rewrite.Class;
-
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -356,7 +353,7 @@ namespace Stonks.Core.Rewrite.Service
                                 id: Convert.ToUInt64(reader["_ID"]),
                                 guildId: guildId,
                                 userId: Convert.ToUInt64(reader["USERID"]),
-                                coin: Convert.ToUInt64(reader["COIN"]),
+                                coin: Convert.ToUInt64(reader["MONEY"]),
                                 round: Convert.ToInt32(reader["ROUND"])
                             );
                         }

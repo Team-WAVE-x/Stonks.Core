@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -78,15 +77,6 @@ namespace Stonks.Core.Rewrite.Class
         public string Description { get; set; }
 
         [JsonProperty("args")]
-        public Arg[] Args { get; set; }
-    }
-
-    public partial class Arg
-    {
-        [JsonProperty("name")]
-        public string Name { get; set; }
-
-        [JsonProperty("description")]
-        public string Description { get; set; }
+        public string[] Args { get; set; }
     }
 }

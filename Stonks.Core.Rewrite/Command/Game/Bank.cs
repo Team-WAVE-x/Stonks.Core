@@ -1,12 +1,5 @@
-﻿using Discord;
-using Discord.Commands;
-
-using LazyCache;
- 
-using Stonks.Core.Rewrite.Class;
+﻿using Discord.Commands;
 using Stonks.Core.Rewrite.Service;
-
-using System;
 using System.Threading.Tasks;
 
 namespace Stonks.Core.Rewrite.Command.Game
@@ -23,8 +16,8 @@ namespace Stonks.Core.Rewrite.Command.Game
         [Command("은행")]
         public async Task BankAsync()
         {
-            var builder = new ComponentBuilder().WithButton("Hello!", customId: "id_1", ButtonStyle.Primary, row: 0);
-            await Context.Channel.SendMessageAsync("Test buttons!", component: builder.Build());
+            var user = _sql.GetUser(Context.Guild.Id, Context.User.Id);
+            await ReplyAsync($"💰 {Context.User.Username}님은 현재 `{string.Format("{0:#,0}", user.Coin)}` 코인을 소지하고 있습니다.");
         }
     }
 }

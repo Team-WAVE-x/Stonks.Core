@@ -1,14 +1,8 @@
 ﻿using Discord;
 using Discord.Commands;
-using Discord.Net;
 using Discord.WebSocket;
-
 using Microsoft.Extensions.DependencyInjection;
-
-using Newtonsoft.Json;
-
 using Stonks.Core.Rewrite.Class;
-
 using System;
 using System.Threading;
 using System.Threading.Tasks;
