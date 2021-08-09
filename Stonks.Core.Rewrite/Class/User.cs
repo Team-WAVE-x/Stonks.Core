@@ -12,15 +12,13 @@ namespace Stonks.Core.Rewrite.Class
         public ulong GuildId { get; }
         public ulong UserId { get; }
         public ulong Coin { get; }
-        public int Round { get; }
 
-        public User(ulong id, ulong guildId, ulong userId, ulong coin, int round)
+        public User(ulong id, ulong guildId, ulong userId, ulong coin)
         {
             this.DatabaseId = id;
             this.GuildId = guildId;
             this.UserId = userId;
             this.Coin = coin;
-            this.Round = round;
         }
     }
 }

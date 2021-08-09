@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Interactivity;
 using Microsoft.Extensions.DependencyInjection;
 using Stonks.Core.Rewrite.Class;
 using System;
@@ -39,8 +40,10 @@ namespace Stonks.Core.Rewrite.Service
         {
             return new ServiceCollection()
                 .AddSingleton<CommandHandlingService>()
+                .AddSingleton<InteractivityService>()
                 .AddSingleton<DiscordSocketClient>(x => ActivatorUtilities.CreateInstance<DiscordSocketClient>(x, new DiscordSocketConfig { LogLevel = LogSeverity.Debug }))
-                .AddSingleton<CommandService>(x => ActivatorUtilities.CreateInstance<CommandService>(x, new CommandServiceConfig { DefaultRunMode = RunMode.Sync, LogLevel = LogSeverity.Debug }))
+                .AddSingleton<CommandService>(x => ActivatorUtilities.CreateInstance<CommandService>(x, new CommandServiceConfig { DefaultRunMode = RunMode.Async, LogLevel = LogSeverity.Debug }))
+                .AddSingleton(new InteractivityConfig { DefaultTimeout = TimeSpan.FromMinutes(1) })
                 .AddSingleton<SqlService>()
                 .AddSingleton<Setting>()
                 .BuildServiceProvider();

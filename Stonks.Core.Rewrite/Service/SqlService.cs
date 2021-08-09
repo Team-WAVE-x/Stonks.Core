@@ -32,7 +32,7 @@ namespace Stonks.Core.Rewrite.Service
                 using (MySqlCommand sqlCom = new MySqlCommand())
                 {
                     sqlCom.Connection = _connection;
-                    sqlCom.CommandText = $"INSERT INTO TABLE_{guildId} (USERID) VALUES(@USERID)";
+                    sqlCom.CommandText = $"INSERT INTO TABLE_{guildId} (USERID, MONEY) VALUES(@USERID, 0)";
                     sqlCom.Parameters.AddWithValue("@USERID", userId);
                     sqlCom.CommandType = CommandType.Text;
                     sqlCom.ExecuteNonQuery();
@@ -119,8 +119,7 @@ namespace Stonks.Core.Rewrite.Service
                                 id: Convert.ToUInt64(reader["_ID"]),
                                 guildId: guildId,
                                 userId: Convert.ToUInt64(reader["USERID"]),
-                                coin: Convert.ToUInt64(reader["COIN"]),
-                                round: Convert.ToInt32(reader["ROUND"])
+                                coin: Convert.ToUInt64(reader["COIN"])
                             ));
                         }
                     }
@@ -353,8 +352,7 @@ namespace Stonks.Core.Rewrite.Service
                                 id: Convert.ToUInt64(reader["_ID"]),
                                 guildId: guildId,
                                 userId: Convert.ToUInt64(reader["USERID"]),
-                                coin: Convert.ToUInt64(reader["MONEY"]),
-                                round: Convert.ToInt32(reader["ROUND"])
+                                coin: Convert.ToUInt64(reader["MONEY"])
                             );
                         }
                     }
@@ -376,6 +374,82 @@ namespace Stonks.Core.Rewrite.Service
             }
 
             return user;
+        }
+
+        /// <summary>
+        /// 유저에게 코인을 추가합니다.
+        /// </summary>
+        /// <param name="guildId">길드 아이디</param>
+        /// <param name="userId">유저 아이디</param>
+        /// <param name="coin">추가할 코인의 량</param>
+        public void AddUserCoin(ulong guildId, ulong userId, int coin)
+        {
+            _connection.Open();
+
+            try
+            {
+                using (MySqlCommand sqlCom = new MySqlCommand())
+                {
+                    sqlCom.Connection = _connection;
+                    sqlCom.CommandText = $"UPDATE TABLE_{guildId} SET MONEY=MONEY+@MONEY WHERE USERID=@ID";
+                    sqlCom.Parameters.AddWithValue("@MONEY", coin);
+                    sqlCom.Parameters.AddWithValue("@ID", userId);
+                    sqlCom.CommandType = CommandType.Text;
+                    sqlCom.ExecuteNonQuery();
+                }
+            }
+            catch (MySqlException ex)
+            {
+                switch (ex.ErrorCode)
+                {
+                    case 1146: //ER_NO_SUCH_TABLE
+                        AddNewGuild(guildId);
+                        break;
+
+                    default:
+                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.ErrorCode})");
+                }
+            }
+
+            _connection.Close();
+        }
+
+        /// <summary>
+        /// 유저에게서 코인을 가져갑니다.
+        /// </summary>
+        /// <param name="guildId">길드 아이디</param>
+        /// <param name="userId">유저 아이디</param>
+        /// <param name="coin">추가할 코인의 량</param>
+        public void SubUserCoin(ulong guildId, ulong userId, int coin)
+        {
+            _connection.Open();
+
+            try
+            {
+                using (MySqlCommand sqlCom = new MySqlCommand())
+                {
+                    sqlCom.Connection = _connection;
+                    sqlCom.CommandText = $"UPDATE TABLE_{guildId} SET MONEY=MONEY-@MONEY WHERE USERID=@ID";
+                    sqlCom.Parameters.AddWithValue("@MONEY", coin);
+                    sqlCom.Parameters.AddWithValue("@ID", userId);
+                    sqlCom.CommandType = CommandType.Text;
+                    sqlCom.ExecuteNonQuery();
+                }
+            }
+            catch (MySqlException ex)
+            {
+                switch (ex.ErrorCode)
+                {
+                    case 1146: //ER_NO_SUCH_TABLE
+                        AddNewGuild(guildId);
+                        break;
+
+                    default:
+                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.ErrorCode})");
+                }
+            }
+
+            _connection.Close();
         }
     }
 }
