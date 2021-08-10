@@ -24,4 +24,9 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Command\Management\" />
+    <Folder Include="Command\Stat\" />
+  </ItemGroup>
+
 </Project>

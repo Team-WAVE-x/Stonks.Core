@@ -70,7 +70,7 @@ namespace Stonks.Core.Rewrite.Service
                 using (MySqlCommand sqlCom = new MySqlCommand())
                 {
                     sqlCom.Connection = _connection;
-                    sqlCom.CommandText = $"CREATE TABLE TABLE_{guildid} (_ID INT PRIMARY KEY AUTO_INCREMENT, USERID BIGINT NOT NULL, MONEY BIGINT NOT NULL, ROUND INT NOT NULL) ENGINE = INNODB;";
+                    sqlCom.CommandText = $"CREATE TABLE TABLE_{guildid} (_ID INT PRIMARY KEY AUTO_INCREMENT, USERID BIGINT NOT NULL, MONEY BIGINT NOT NULL) ENGINE = INNODB;";
                     sqlCom.CommandType = CommandType.Text;
                     sqlCom.ExecuteNonQuery();
                 }
@@ -119,7 +119,7 @@ namespace Stonks.Core.Rewrite.Service
                                 id: Convert.ToUInt64(reader["_ID"]),
                                 guildId: guildId,
                                 userId: Convert.ToUInt64(reader["USERID"]),
-                                coin: Convert.ToUInt64(reader["COIN"])
+                                coin: Convert.ToUInt64(reader["MONEY"])
                             ));
                         }
                     }

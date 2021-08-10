@@ -47,8 +47,8 @@ namespace Stonks.Core.Rewrite.Command.General
             var paginator = new StaticPaginatorBuilder()
                 .WithUsers(Context.User)
                 .WithPages(commandPages)
-                .WithCancelledEmbed()
-                .WithTimoutedEmbed()
+                .WithCancelledEmbed(new EmbedBuilder() { Title = "🛑 명령어가 취소되었습니다.", Color = Color.Red })
+                .WithTimoutedEmbed(new EmbedBuilder() { Title = "🛑 대기 시간이 초과되었습니다.", Color = Color.Red })
                 .WithDefaultEmotes()
                 .Build();
 
