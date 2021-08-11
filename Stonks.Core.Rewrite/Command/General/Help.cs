@@ -3,6 +3,7 @@ using Discord.Commands;
 using Interactivity;
 using Interactivity.Pagination;
 using Stonks.Core.Rewrite.Class;
+using Stonks.Core.Rewrite.Extension;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

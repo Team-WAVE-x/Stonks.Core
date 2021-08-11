@@ -1,5 +1,5 @@
 ﻿using Discord.Commands;
-using Stonks.Core.Rewrite.Class;
+using Stonks.Core.Rewrite.Precondition;
 using Stonks.Core.Rewrite.Service;
 using System;
 using System.Threading.Tasks;

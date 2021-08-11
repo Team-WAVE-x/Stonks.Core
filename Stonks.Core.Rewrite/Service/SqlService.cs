@@ -48,6 +48,10 @@ namespace Stonks.Core.Rewrite.Service
                         AddNewGuild(guildId);
                         break;
 
+                    case 1049: //ER_BAD_DB_ERROR
+                        CreateDatabase();
+                        break;
+
                     case 1050: //ER_TABLE_EXISTS_ERROR
                         throw new Exception("유저가 이미 존재합니다.");
 
@@ -83,6 +87,38 @@ namespace Stonks.Core.Rewrite.Service
                 {
                     case 1050: //ER_TABLE_EXISTS_ERROR
                         throw new Exception("길드가 이미 존재합니다.");
+
+                    default:
+                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.ErrorCode})");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 데이터베이스를 생성합니다.
+        /// </summary>
+        public void CreateDatabase()
+        {
+            try
+            {
+                _connection.Open();
+
+                using (MySqlCommand sqlCom = new MySqlCommand())
+                {
+                    sqlCom.Connection = _connection;
+                    sqlCom.CommandText = $"CREATE DATABASE IF NOT EXISTS `STONKS_DB`;";
+                    sqlCom.CommandType = CommandType.Text;
+                    sqlCom.ExecuteNonQuery();
+                }
+
+                _connection.Close();
+            }
+            catch (MySqlException ex)
+            {
+                switch (ex.ErrorCode)
+                {
+                    case 1007: //ER_DB_CREATE_EXISTS
+                        throw new Exception("데이터베이스가 이미 존재합니다.");
 
                     default:
                         throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.ErrorCode})");
@@ -142,185 +178,6 @@ namespace Stonks.Core.Rewrite.Service
             }
 
             return users;
-        }
-
-        /// <summary>
-        /// 끝말잇기 데이터베이스에서 랜덤한 단어를 하나 불러와 반환합니다.
-        /// </summary>
-        /// <returns>랜덤한 단어</returns>
-        public string GetRandomWord()
-        {
-            string result = string.Empty;
-
-            try
-            {
-                _connection.Open();
-
-                using (MySqlCommand sqlCom = new MySqlCommand())
-                {
-                    sqlCom.Connection = _connection;
-                    sqlCom.CommandText = $"SELECT * FROM DICTIONARY AS R1 JOIN (SELECT(RAND() * (SELECT MAX(ID) FROM DICTIONARY)) AS ID) AS R2 WHERE R1.ID >= R2.ID ORDER BY R1.ID ASC LIMIT 1;";
-                    sqlCom.CommandType = CommandType.Text;
-
-                    using (MySqlDataReader reader = sqlCom.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            result = Convert.ToString(reader["WORD"]);
-                        }
-                    }
-                }
-
-                _connection.Close();
-            }
-            catch (MySqlException ex)
-            {
-                switch (ex.ErrorCode)
-                {
-                    case 1146: //ER_NO_SUCH_TABLE
-                        throw new Exception($"단어 사전 테이블을 찾을 수 없습니다.");
-
-                    default:
-                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.ErrorCode})");
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// 해당 글자로 시작하는 단어의 리스트를 가져옵니다.
-        /// </summary>
-        /// <param name="startWith">시작하는 글자</param>
-        /// <returns>해당 글자로 시작하는 단어의 리스트</returns>
-        public List<string> GetStartWords(string startWith)
-        {
-            List<string> result = new List<string>();
-
-            try
-            {
-                _connection.Open();
-
-                using (MySqlCommand sqlCom = new MySqlCommand())
-                {
-                    sqlCom.Connection = _connection;
-                    sqlCom.CommandText = $"SELECT * FROM DICTIONARY WHERE WORD LIKE @WORD;";
-                    sqlCom.Parameters.AddWithValue("@WORD", $"{startWith}%");
-                    sqlCom.CommandType = CommandType.Text;
-
-                    using (MySqlDataReader reader = sqlCom.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            result.Add(Convert.ToString(reader["WORD"]));
-                        }
-                    }
-                }
-
-                _connection.Close();
-            }
-            catch (MySqlException ex)
-            {
-                switch (ex.ErrorCode)
-                {
-                    case 1146: //ER_NO_SUCH_TABLE
-                        throw new Exception($"단어 사전 테이블을 찾을 수 없습니다.");
-
-                    default:
-                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.ErrorCode})");
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// 해당 단어가 존재하는지 확인합니다.
-        /// </summary>
-        /// <param name="word">확인할 단어</param>
-        /// <returns>단어가 존재하는지 여부</returns>
-        public bool IsWordExist(string word)
-        {
-            bool result = false;
-
-            try
-            {
-                _connection.Open();
-
-                using (MySqlCommand sqlCom = new MySqlCommand())
-                {
-                    sqlCom.Connection = _connection;
-                    sqlCom.CommandText = $"SELECT WORD FROM DICTIONARY WHERE WORD=@WORD LIMIT 1;";
-                    sqlCom.Parameters.AddWithValue("@WORD", word);
-                    sqlCom.CommandType = CommandType.Text;
-
-                    using (MySqlDataReader reader = sqlCom.ExecuteReader())
-                    {
-                        result = reader.HasRows;
-                    }
-                }
-
-                _connection.Close();
-            }
-            catch (MySqlException ex)
-            {
-                switch (ex.ErrorCode)
-                {
-                    case 1146: //ER_NO_SUCH_TABLE
-                        throw new Exception($"단어 사전 테이블을 찾을 수 없습니다.");
-
-                    default:
-                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.ErrorCode})");
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// 데이터베이스에서 단어를 검색합니다.
-        /// </summary>
-        /// <param name="word">찾을 단어</param>
-        /// <returns>해당 글자로 시작하는 단어의 리스트</returns>
-        public List<string> SearchWord(string word)
-        {
-            List<string> words = new List<string>();
-
-            try
-            {
-                _connection.Open();
-
-                using (MySqlCommand sqlCom = new MySqlCommand())
-                {
-                    sqlCom.Connection = _connection;
-                    sqlCom.CommandText = $"SELECT * FROM DICTIONARY WHERE WORD LIKE @TEXT ORDER BY LENGTH(WORD);";
-                    sqlCom.Parameters.AddWithValue("@TEXT", $"%{word}%");
-                    sqlCom.CommandType = CommandType.Text;
-
-                    using (MySqlDataReader reader = sqlCom.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            words.Add(Convert.ToString(reader["WORD"]));
-                        }
-                    }
-                }
-
-                _connection.Close();
-            }
-            catch (MySqlException ex)
-            {
-                switch (ex.ErrorCode)
-                {
-                    case 1146: //ER_NO_SUCH_TABLE
-                        throw new Exception($"단어 사전 테이블을 찾을 수 없습니다.");
-
-                    default:
-                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.ErrorCode})");
-                }
-            }
-
-            return words;
         }
 
         /// <summary>
