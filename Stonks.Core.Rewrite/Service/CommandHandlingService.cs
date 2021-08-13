@@ -38,20 +38,18 @@ namespace Stonks.Core.Rewrite.Service
             if (!command.IsSpecified || result.IsSuccess)
                 return;
 
-            var builder = new EmbedBuilder
+            var embed = new EmbedBuilder();
+            embed.WithTitle("❌ 오류");
+            embed.WithColor(Color.Red);
+            embed.WithDescription($"`{result}`");
+            embed.WithFooter(new EmbedFooterBuilder
             {
-                Title = "❌ 오류",
-                Color = Color.Red,
-                Description = $"`{result}`",
-                Footer = new EmbedFooterBuilder
-                {
-                    IconUrl = _client.CurrentUser.GetAvatarUrl(),
-                    Text = _client.CurrentUser.Username
-                },
-                Timestamp = DateTimeOffset.Now
-            };
+                IconUrl = _client.CurrentUser.GetAvatarUrl(),
+                Text = _client.CurrentUser.Username
+            });
+            embed.WithTimestamp(DateTimeOffset.Now);
 
-            await (context.Client.GetChannelAsync(_setting.Config.ErrorLogChannelId).Result as ISocketMessageChannel).SendMessageAsync(embed: builder.Build());
+            await (context.Client.GetChannelAsync(_setting.Config.ErrorLogChannelId).Result as ISocketMessageChannel).SendMessageAsync(embed: embed.Build());
         }
 
         private async Task OnClientMessage(SocketMessage socketMessage)

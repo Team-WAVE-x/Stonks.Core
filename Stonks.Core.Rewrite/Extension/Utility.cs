@@ -1,4 +1,6 @@
-﻿namespace Stonks.Core.Rewrite.Extension
+﻿using System;
+
+namespace Stonks.Core.Rewrite.Extension
 {
     public static class Untility
     {
