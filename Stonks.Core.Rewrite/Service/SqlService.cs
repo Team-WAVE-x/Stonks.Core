@@ -54,17 +54,14 @@ namespace Stonks.Core.Rewrite.Service
             }
             catch (MySqlException ex)
             {
-                switch (ex.Code)
+                switch ((MySqlErrorCode)ex.Number)
                 {
-                    case 1146: //ER_NO_SUCH_TABLE
+                    case MySqlErrorCode.NoSuchTable:
                         AddNewGuild(guildId);
                         break;
 
-                    case 1050: //ER_TABLE_EXISTS_ERROR
-                        throw new Exception("유저가 이미 존재합니다.");
-
                     default:
-                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.Code}, {ex.Message})");
+                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.Number}, {ex.Message})");
                 }
 
                 return null;
@@ -96,13 +93,13 @@ namespace Stonks.Core.Rewrite.Service
             }
             catch (MySqlException ex)
             {
-                switch (ex.Code)
+                switch ((MySqlErrorCode)ex.Number)
                 {
-                    case 1050: //ER_TABLE_EXISTS_ERROR
+                    case MySqlErrorCode.TableExists:
                         throw new Exception("길드가 이미 존재합니다.");
 
                     default:
-                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.Code})");
+                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.Number}, {ex.Message})");
                 }
             }
         }
@@ -149,15 +146,15 @@ namespace Stonks.Core.Rewrite.Service
             }
             catch (MySqlException ex)
             {
-                switch (ex.Code)
+                switch ((MySqlErrorCode)ex.Number)
                 {
-                    case 1146: //ER_NO_SUCH_TABLE
+                    case MySqlErrorCode.NoSuchTable:
                         AddNewGuild(guildId);
                         users = new List<User>();
                         break;
 
                     default:
-                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.Code}, {ex.Message})");
+                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.Number}, {ex.Message})");
                 }
             }
 
@@ -211,9 +208,9 @@ namespace Stonks.Core.Rewrite.Service
             }
             catch (MySqlException ex)
             {
-                switch (ex.Number)
+                switch ((MySqlErrorCode)ex.Number)
                 {
-                    case 1146: //ER_NO_SUCH_TABLE
+                    case MySqlErrorCode.NoSuchTable:
                         AddNewGuild(guildId);
                         break;
 
@@ -261,14 +258,14 @@ namespace Stonks.Core.Rewrite.Service
             }
             catch (MySqlException ex)
             {
-                switch (ex.Code)
+                switch ((MySqlErrorCode)ex.Number)
                 {
-                    case 1146: //ER_NO_SUCH_TABLE
+                    case MySqlErrorCode.NoSuchTable: //ER_NO_SUCH_TABLE
                         AddNewGuild(guildId);
                         break;
 
                     default:
-                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.Code}, {ex.Message})");
+                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.Number}, {ex.Message})");
                 }
             }
         }
@@ -309,14 +306,14 @@ namespace Stonks.Core.Rewrite.Service
             }
             catch (MySqlException ex)
             {
-                switch (ex.Code)
+                switch ((MySqlErrorCode)ex.Number)
                 {
-                    case 1146: //ER_NO_SUCH_TABLE
+                    case MySqlErrorCode.NoSuchTable:
                         AddNewGuild(guildId);
                         break;
 
                     default:
-                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.Code}, {ex.Message})");
+                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.Number}, {ex.Message})");
                 }
             }
         }
