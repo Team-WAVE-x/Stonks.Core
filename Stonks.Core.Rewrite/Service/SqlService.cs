@@ -10,12 +10,10 @@ namespace Stonks.Core.Rewrite.Service
     public class SqlService
     {
         private readonly Setting _setting;
-        private readonly MySqlConnection _connection;
 
         public SqlService(IServiceProvider service)
         {
             _setting = service.GetRequiredService<Setting>();
-            _connection = new MySqlConnection(_setting.Config.ConnectionString);
         }
 
         /// <summary>
@@ -23,41 +21,53 @@ namespace Stonks.Core.Rewrite.Service
         /// </summary>
         /// <param name="guildid">길드 아이디</param>
         /// <param name="userid">추가할 유저 아이디</param>
-        public void AddNewUser(ulong guildId, ulong userId)
+        public User AddNewUser(ulong guildId, ulong userId)
         {
             try
             {
-                _connection.Open();
+                long insertedId;
 
-                using (MySqlCommand sqlCom = new MySqlCommand())
+                using (MySqlConnection _connection = new MySqlConnection(_setting.Config.ConnectionString))
                 {
-                    sqlCom.Connection = _connection;
-                    sqlCom.CommandText = $"INSERT INTO TABLE_{guildId} (USERID, MONEY) VALUES(@USERID, 0)";
-                    sqlCom.Parameters.AddWithValue("@USERID", userId);
-                    sqlCom.CommandType = CommandType.Text;
-                    sqlCom.ExecuteNonQuery();
+                    _connection.Open();
+
+                    using (MySqlCommand sqlCom = new MySqlCommand())
+                    {
+                        sqlCom.Connection = _connection;
+                        sqlCom.CommandText = $"INSERT INTO TABLE_{guildId} (USERID, MONEY) VALUES(@USERID, 0)";
+                        sqlCom.Parameters.AddWithValue("@USERID", userId);
+                        sqlCom.CommandType = CommandType.Text;
+                        sqlCom.ExecuteNonQuery();
+
+                        insertedId = sqlCom.LastInsertedId;
+                    }
+
+                    _connection.Close();
                 }
 
-                _connection.Close();
+                return new User(
+                    id: Convert.ToUInt64(insertedId),
+                    guildId: guildId,
+                    userId: userId,
+                    coin: 0
+                );
             }
             catch (MySqlException ex)
             {
-                switch (ex.ErrorCode)
+                switch (ex.Code)
                 {
                     case 1146: //ER_NO_SUCH_TABLE
                         AddNewGuild(guildId);
-                        break;
-
-                    case 1049: //ER_BAD_DB_ERROR
-                        CreateDatabase();
                         break;
 
                     case 1050: //ER_TABLE_EXISTS_ERROR
                         throw new Exception("유저가 이미 존재합니다.");
 
                     default:
-                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.ErrorCode})");
+                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.Code}, {ex.Message})");
                 }
+
+                return null;
             }
         }
 
@@ -69,59 +79,30 @@ namespace Stonks.Core.Rewrite.Service
         {
             try
             {
-                _connection.Open();
-
-                using (MySqlCommand sqlCom = new MySqlCommand())
+                using (MySqlConnection _connection = new MySqlConnection(_setting.Config.ConnectionString))
                 {
-                    sqlCom.Connection = _connection;
-                    sqlCom.CommandText = $"CREATE TABLE TABLE_{guildid} (_ID INT PRIMARY KEY AUTO_INCREMENT, USERID BIGINT NOT NULL, MONEY BIGINT NOT NULL) ENGINE = INNODB;";
-                    sqlCom.CommandType = CommandType.Text;
-                    sqlCom.ExecuteNonQuery();
-                }
+                    _connection.Open();
 
-                _connection.Close();
+                    using (MySqlCommand sqlCom = new MySqlCommand())
+                    {
+                        sqlCom.Connection = _connection;
+                        sqlCom.CommandText = $"CREATE TABLE TABLE_{guildid} (_ID INT PRIMARY KEY AUTO_INCREMENT, USERID BIGINT NOT NULL, MONEY BIGINT NOT NULL) ENGINE = INNODB;";
+                        sqlCom.CommandType = CommandType.Text;
+                        sqlCom.ExecuteNonQuery();
+                    }
+
+                    _connection.Close();
+                }
             }
             catch (MySqlException ex)
             {
-                switch (ex.ErrorCode)
+                switch (ex.Code)
                 {
                     case 1050: //ER_TABLE_EXISTS_ERROR
                         throw new Exception("길드가 이미 존재합니다.");
 
                     default:
-                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.ErrorCode})");
-                }
-            }
-        }
-
-        /// <summary>
-        /// 데이터베이스를 생성합니다.
-        /// </summary>
-        public void CreateDatabase()
-        {
-            try
-            {
-                _connection.Open();
-
-                using (MySqlCommand sqlCom = new MySqlCommand())
-                {
-                    sqlCom.Connection = _connection;
-                    sqlCom.CommandText = $"CREATE DATABASE IF NOT EXISTS `STONKS_DB`;";
-                    sqlCom.CommandType = CommandType.Text;
-                    sqlCom.ExecuteNonQuery();
-                }
-
-                _connection.Close();
-            }
-            catch (MySqlException ex)
-            {
-                switch (ex.ErrorCode)
-                {
-                    case 1007: //ER_DB_CREATE_EXISTS
-                        throw new Exception("데이터베이스가 이미 존재합니다.");
-
-                    default:
-                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.ErrorCode})");
+                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.Code})");
                 }
             }
         }
@@ -138,34 +119,37 @@ namespace Stonks.Core.Rewrite.Service
 
             try
             {
-                _connection.Open();
-
-                using (MySqlCommand sqlCom = new MySqlCommand())
+                using (MySqlConnection _connection = new MySqlConnection(_setting.Config.ConnectionString))
                 {
-                    sqlCom.Connection = _connection;
-                    sqlCom.CommandText = $"SELECT * FROM TABLE_{guildId} WHERE NOT MONEY=0 ORDER BY MONEY DESC LIMIT @LIMIT;";
-                    sqlCom.Parameters.AddWithValue("@LIMIT", limit);
-                    sqlCom.CommandType = CommandType.Text;
+                    _connection.Open();
 
-                    using (MySqlDataReader reader = sqlCom.ExecuteReader())
+                    using (MySqlCommand sqlCom = new MySqlCommand())
                     {
-                        while (reader.Read())
+                        sqlCom.Connection = _connection;
+                        sqlCom.CommandText = $"SELECT * FROM TABLE_{guildId} WHERE NOT MONEY=0 ORDER BY MONEY DESC LIMIT @LIMIT;";
+                        sqlCom.Parameters.AddWithValue("@LIMIT", limit);
+                        sqlCom.CommandType = CommandType.Text;
+
+                        using (MySqlDataReader reader = sqlCom.ExecuteReader())
                         {
-                            users.Add(new User(
-                                id: Convert.ToUInt64(reader["_ID"]),
-                                guildId: guildId,
-                                userId: Convert.ToUInt64(reader["USERID"]),
-                                coin: Convert.ToUInt64(reader["MONEY"])
-                            ));
+                            while (reader.Read())
+                            {
+                                users.Add(new User(
+                                    id: Convert.ToUInt64(reader["_ID"]),
+                                    guildId: guildId,
+                                    userId: Convert.ToUInt64(reader["USERID"]),
+                                    coin: Convert.ToUInt64(reader["MONEY"])
+                                ));
+                            }
                         }
                     }
-                }
 
-                _connection.Close();
+                    _connection.Close();
+                }
             }
             catch (MySqlException ex)
             {
-                switch (ex.ErrorCode)
+                switch (ex.Code)
                 {
                     case 1146: //ER_NO_SUCH_TABLE
                         AddNewGuild(guildId);
@@ -173,7 +157,7 @@ namespace Stonks.Core.Rewrite.Service
                         break;
 
                     default:
-                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.ErrorCode})");
+                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.Code}, {ex.Message})");
                 }
             }
 
@@ -192,41 +176,49 @@ namespace Stonks.Core.Rewrite.Service
 
             try
             {
-                _connection.Open();
-
-                using (MySqlCommand sqlCom = new MySqlCommand())
+                using (MySqlConnection _connection = new MySqlConnection(_setting.Config.ConnectionString))
                 {
-                    sqlCom.Connection = _connection;
-                    sqlCom.CommandText = $"SELECT * FROM TABLE_{guildId} WHERE USERID=@ID ORDER BY MONEY DESC LIMIT 1;";
-                    sqlCom.Parameters.AddWithValue("@ID", userId);
-                    sqlCom.CommandType = CommandType.Text;
+                    _connection.Open();
 
-                    using (MySqlDataReader reader = sqlCom.ExecuteReader())
+                    using (MySqlCommand sqlCom = new MySqlCommand())
                     {
-                        while (reader.Read())
+                        sqlCom.Connection = _connection;
+                        sqlCom.CommandText = $"SELECT * FROM TABLE_{guildId} WHERE USERID=@ID LIMIT 1;";
+                        sqlCom.Parameters.AddWithValue("@ID", userId);
+                        sqlCom.CommandType = CommandType.Text;
+
+                        using (MySqlDataReader reader = sqlCom.ExecuteReader())
                         {
-                            user = new User(
-                                id: Convert.ToUInt64(reader["_ID"]),
-                                guildId: guildId,
-                                userId: Convert.ToUInt64(reader["USERID"]),
-                                coin: Convert.ToUInt64(reader["MONEY"])
-                            );
+                            if (!reader.HasRows)
+                            {
+                                user = AddNewUser(guildId, userId);
+                            }
+
+                            while (reader.Read())
+                            {
+                                user = new User(
+                                    id: Convert.ToUInt64(reader["_ID"]),
+                                    guildId: guildId,
+                                    userId: Convert.ToUInt64(reader["USERID"]),
+                                    coin: Convert.ToUInt64(reader["MONEY"])
+                                );
+                            }
                         }
                     }
-                }
 
-                _connection.Close();
+                    _connection.Close();
+                }
             }
             catch (MySqlException ex)
             {
-                switch (ex.ErrorCode)
+                switch (ex.Number)
                 {
                     case 1146: //ER_NO_SUCH_TABLE
                         AddNewGuild(guildId);
                         break;
 
                     default:
-                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.ErrorCode})");
+                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.Number}, {ex.Message})");
                 }
             }
 
@@ -238,37 +230,47 @@ namespace Stonks.Core.Rewrite.Service
         /// </summary>
         /// <param name="guildId">길드 아이디</param>
         /// <param name="userId">유저 아이디</param>
-        /// <param name="coin">추가할 코인의 량</param>
-        public void AddUserCoin(ulong guildId, ulong userId, int coin)
+        /// <param name="coin">추가할 코인의 양</param>
+        public void AddUserCoin(ulong guildId, ulong userId, ulong coin)
         {
-            _connection.Open();
-
             try
             {
-                using (MySqlCommand sqlCom = new MySqlCommand())
+                using (MySqlConnection _connection = new MySqlConnection(_setting.Config.ConnectionString))
                 {
-                    sqlCom.Connection = _connection;
-                    sqlCom.CommandText = $"UPDATE TABLE_{guildId} SET MONEY=MONEY+@MONEY WHERE USERID=@ID";
-                    sqlCom.Parameters.AddWithValue("@MONEY", coin);
-                    sqlCom.Parameters.AddWithValue("@ID", userId);
-                    sqlCom.CommandType = CommandType.Text;
-                    sqlCom.ExecuteNonQuery();
+                    _connection.Open();
+
+                    using (MySqlCommand sqlCom = new MySqlCommand())
+                    {
+                        sqlCom.Connection = _connection;
+                        sqlCom.CommandText = $"UPDATE TABLE_{guildId} SET MONEY=MONEY+@MONEY WHERE USERID=@ID";
+                        sqlCom.Parameters.AddWithValue("@MONEY", coin);
+                        sqlCom.Parameters.AddWithValue("@ID", userId);
+                        sqlCom.CommandType = CommandType.Text;
+
+                        int numberOfRecords = sqlCom.ExecuteNonQuery();
+
+                        if (numberOfRecords == 0)
+                        {
+                            AddNewUser(guildId, userId);
+                            AddUserCoin(guildId, userId, coin);
+                        }
+                    }
+
+                    _connection.Close();
                 }
             }
             catch (MySqlException ex)
             {
-                switch (ex.ErrorCode)
+                switch (ex.Code)
                 {
                     case 1146: //ER_NO_SUCH_TABLE
                         AddNewGuild(guildId);
                         break;
 
                     default:
-                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.ErrorCode})");
+                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.Code}, {ex.Message})");
                 }
             }
-
-            _connection.Close();
         }
 
         /// <summary>
@@ -277,36 +279,46 @@ namespace Stonks.Core.Rewrite.Service
         /// <param name="guildId">길드 아이디</param>
         /// <param name="userId">유저 아이디</param>
         /// <param name="coin">추가할 코인의 량</param>
-        public void SubUserCoin(ulong guildId, ulong userId, int coin)
+        public void SubUserCoin(ulong guildId, ulong userId, ulong coin)
         {
-            _connection.Open();
-
             try
             {
-                using (MySqlCommand sqlCom = new MySqlCommand())
+                using (MySqlConnection _connection = new MySqlConnection(_setting.Config.ConnectionString))
                 {
-                    sqlCom.Connection = _connection;
-                    sqlCom.CommandText = $"UPDATE TABLE_{guildId} SET MONEY=MONEY-@MONEY WHERE USERID=@ID";
-                    sqlCom.Parameters.AddWithValue("@MONEY", coin);
-                    sqlCom.Parameters.AddWithValue("@ID", userId);
-                    sqlCom.CommandType = CommandType.Text;
-                    sqlCom.ExecuteNonQuery();
+                    _connection.Open();
+
+                    using (MySqlCommand sqlCom = new MySqlCommand())
+                    {
+                        sqlCom.Connection = _connection;
+                        sqlCom.CommandText = $"UPDATE TABLE_{guildId} SET MONEY=MONEY-@MONEY WHERE USERID=@ID";
+                        sqlCom.Parameters.AddWithValue("@MONEY", coin);
+                        sqlCom.Parameters.AddWithValue("@ID", userId);
+                        sqlCom.CommandType = CommandType.Text;
+
+                        int numberOfRecords = sqlCom.ExecuteNonQuery();
+
+                        if (numberOfRecords == 0)
+                        {
+                            AddNewUser(guildId, userId);
+                            AddUserCoin(guildId, userId, coin);
+                        }
+                    }
+
+                    _connection.Close();
                 }
             }
             catch (MySqlException ex)
             {
-                switch (ex.ErrorCode)
+                switch (ex.Code)
                 {
                     case 1146: //ER_NO_SUCH_TABLE
                         AddNewGuild(guildId);
                         break;
 
                     default:
-                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.ErrorCode})");
+                        throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.Code}, {ex.Message})");
                 }
             }
-
-            _connection.Close();
         }
     }
 }

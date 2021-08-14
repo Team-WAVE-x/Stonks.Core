@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -23,20 +24,24 @@ namespace Stonks.Core.Rewrite.Command.General
             else
                 pingColor = Color.Red;
 
-            var builder = new EmbedBuilder()
+            var embed = new EmbedBuilder();
+            embed.WithTitle("🏓 Pong!");
+            embed.WithColor(pingColor);
+            embed.WithFields(new List<EmbedFieldBuilder>
             {
-                Title = "🏓 Pong!",
-                Color = pingColor,
-                Fields = new List<EmbedFieldBuilder>
-                {
-                    new EmbedFieldBuilder{ Name = "Gateway Ping", Value = $"`{Context.Client.Latency}ms`" },
-                    new EmbedFieldBuilder{ Name = "Client Ping", Value = $"`{latency.TotalMilliseconds}ms`" }
-                }
-            };
+                new EmbedFieldBuilder{ Name = "Gateway Ping", Value = $"`{Context.Client.Latency}ms`" },
+                new EmbedFieldBuilder{ Name = "Client Ping", Value = $"`{latency.TotalMilliseconds}ms`" }
+            });
+            embed.WithFooter(new EmbedFooterBuilder
+            {
+                IconUrl = Context.User.GetAvatarUrl(ImageFormat.Png, 128),
+                Text = Context.User.Username
+            });
+            embed.WithTimestamp(DateTimeOffset.Now);
 
             await message.ModifyAsync(msg => {
                 msg.Content = null;
-                msg.Embed = builder.Build();
+                msg.Embed = embed.Build();
             });
         }
     }

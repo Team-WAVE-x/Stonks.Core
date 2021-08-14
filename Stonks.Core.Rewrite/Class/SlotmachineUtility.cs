@@ -56,13 +56,37 @@ namespace Stonks.Core.Rewrite.Class
             {
                 return Item.Bell;
             }
-            else if (value == 100)                   //100
+            else                                     //100
             {
                 return Item.Seven;
             }
-            else                                     //Else
+        }
+
+        public static byte Multiplier(List<Item> emotes)
+        {
+            if ((emotes[0] == Item.Seven) && (emotes[1] == Item.Seven) && (emotes[2] == Item.Seven))
             {
-                throw new Exception("The value is not in the range.");
+                return 10;
+            }
+            else if ((emotes[0] == Item.Star) && (emotes[1] == Item.Star) && (emotes[2] == Item.Star))
+            {
+                return 7;
+            }
+            else if ((emotes[0] == Item.Bell) && (emotes[1] == Item.Bell) && (emotes[2] == Item.Bell))
+            {
+                return 5;
+            }
+            else if ((emotes[0] == emotes[1]) && (emotes[1] == emotes[2]))
+            {
+                return 3;
+            }
+            else if ((emotes[0] == emotes[2]))
+            {
+                return 2;
+            }
+            else
+            {
+                return 1;
             }
         }
     }

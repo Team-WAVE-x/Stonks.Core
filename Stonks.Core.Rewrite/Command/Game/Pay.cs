@@ -22,8 +22,8 @@ namespace Stonks.Core.Rewrite.Command.Game
             Random random = new Random();
             int value = random.Next(1, 1000);
 
-            _sql.AddUserCoin(Context.Guild.Id, Context.User.Id, value);
-            await ReplyAsync($"💰 용돈으로 `{string.Format("{0:#,0}", value)}` 코인을 받았습니다!");
+            _sql.AddUserCoin(Context.Guild.Id, Context.User.Id, Convert.ToUInt64(value));
+            await ReplyAsync($"✅ 용돈으로 `{string.Format("{0:#,0}", value)}` 코인을 받았습니다!");
         }
     }
 }

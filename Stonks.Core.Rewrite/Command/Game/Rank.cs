@@ -2,7 +2,6 @@
 using Discord.Commands;
 using Stonks.Core.Rewrite.Service;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Stonks.Core.Rewrite.Command.Game

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Discord;
 using Stonks.Core.Rewrite.Class;
+using Stonks.Core.Rewrite.Precondition;
 
 namespace Stonks.Core.Rewrite.Command.Game
 {
@@ -18,7 +19,8 @@ namespace Stonks.Core.Rewrite.Command.Game
             _sql = sql;
         }
 
-        [Command("슬롯머신", RunMode = RunMode.Sync)]
+        [Command("슬롯머신")]
+        [Cooldown(10)]
         public async Task SlotmachineAsync([Remainder] string coin = null)
         {
             //게임 가능한지 조건 확인
@@ -48,7 +50,7 @@ namespace Stonks.Core.Rewrite.Command.Game
             //게임 로직 시작
             var items = new List<SlotmachineUtility.Item>();
 
-            for (int i = 1; i < 3; i++)
+            for (int i = 0; i < 3; i++)
             {
                 items.Add(SlotmachineUtility.RandomEnum());
             }
@@ -59,6 +61,35 @@ namespace Stonks.Core.Rewrite.Command.Game
             embed.WithColor(Color.Orange);
 
             var message = await Context.Channel.SendMessageAsync(embed: embed.Build());
+
+            for (int i = 1; i < 3; i++)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+                embed.WithDescription(embed.Description + " " + SlotmachineUtility.EnumToEmoji(items[i]).ToString());
+                await message.ModifyAsync(x => x.Embed = embed.Build());
+            }
+
+            var multiply = SlotmachineUtility.Multiplier(items);
+            var newCoin = Convert.ToUInt64(coin) * multiply;
+
+            if (multiply == 1)
+            {
+                embed.WithTitle($"💸 꽝..");
+                embed.WithColor(Color.Red);
+                embed.WithDescription($"슬롯머신에서 `{string.Format("{0:n0}", newCoin)}` 코인을 잃었습니다...");
+
+                _sql.SubUserCoin(Context.Guild.Id, Context.User.Id, newCoin);
+            }
+            else
+            {
+                embed.WithTitle($"{SlotmachineUtility.EnumToEmoji(items[0])}{SlotmachineUtility.EnumToEmoji(items[1])}{SlotmachineUtility.EnumToEmoji(items[2])} {multiply}배!");
+                embed.WithColor(Color.Green);
+                embed.WithDescription($"슬롯머신에서 잭팟이 나와 `{string.Format("{0:n0}", Convert.ToUInt64(newCoin))}` 코인을 얻었습니다!");
+
+                _sql.AddUserCoin(Context.Guild.Id, Context.User.Id, newCoin);
+            }
+
+            await message.ModifyAsync(x => x.Embed = embed.Build());
         }
     }
 }
