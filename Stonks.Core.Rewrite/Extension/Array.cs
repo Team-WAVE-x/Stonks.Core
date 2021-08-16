@@ -2,7 +2,7 @@
 
 namespace Stonks.Core.Rewrite.Extension
 {
-    public static class Untility
+    public static class Array
     {
         public static void InitializeArray<T>(this T[] array) where T : class, new()
         {
