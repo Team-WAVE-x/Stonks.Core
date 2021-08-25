@@ -23,6 +23,7 @@ namespace Stonks.Core.Rewrite.Service
             _service = service;
             _client = service.GetRequiredService<DiscordSocketClient>();
             _client.ReactionAdded += OnReactionAdded;
+            _client.ReactionRemoved += OnReactionRemoved;
         }
 
         public void AddReactionMessage(RestUserMessage message, ulong userId, ulong guildId, Dictionary<IEmote, Action> dictionaries, TimeSpan timeout, bool removeMessageAfterTimeOut = false)
@@ -69,10 +70,20 @@ namespace Stonks.Core.Rewrite.Service
             }
         }
 
+        private async Task OnReactionRemoved(Cacheable<IUserMessage, ulong> cachedMessage, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
+        {
+            var message = await cachedMessage.GetOrDownloadAsync();
+
+            if (reaction.UserId == _client.CurrentUser.Id)
+            {
+                await message.AddReactionAsync(reaction.Emote);
+            }
+        }
+
         private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cachedMessage, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
         {
-            IUserMessage message = await cachedMessage.GetOrDownloadAsync();
-            MemoryCache cache = MemoryCache.Default;
+            var message = await cachedMessage.GetOrDownloadAsync();
+            var cache = MemoryCache.Default;
 
             if (message != null && reaction.User.IsSpecified && reaction.UserId != _client.CurrentUser.Id)
             {
