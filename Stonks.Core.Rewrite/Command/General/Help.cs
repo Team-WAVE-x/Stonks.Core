@@ -5,6 +5,7 @@ using Interactivity.Pagination;
 using Stonks.Core.Rewrite.Class;
 using Stonks.Core.Rewrite.Extension;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -45,12 +46,21 @@ namespace Stonks.Core.Rewrite.Command.General
                 }
             }
 
+            var dictionary = new Dictionary<IEmote, PaginatorAction>
+            {
+                { new Emoji("⏪"), PaginatorAction.SkipToStart },
+                { new Emoji("◀️"), PaginatorAction.Backward },
+                { new Emoji("🛑"), PaginatorAction.Exit },
+                { new Emoji("▶️"), PaginatorAction.Forward },
+                { new Emoji("⏩"), PaginatorAction.SkipToEnd },
+            };
+
             var paginator = new StaticPaginatorBuilder()
                 .WithUsers(Context.User)
                 .WithPages(commandPages)
                 .WithCancelledEmbed(new EmbedBuilder() { Title = "🛑 명령어가 취소되었습니다.", Color = Color.Red })
                 .WithTimoutedEmbed(new EmbedBuilder() { Title = "🛑 대기 시간이 초과되었습니다.", Color = Color.Red })
-                .WithDefaultEmotes()
+                .WithEmotes(dictionary)
                 .Build();
 
             await _interactivity.SendPaginatorAsync(paginator, Context.Channel, TimeSpan.FromMinutes(2));
