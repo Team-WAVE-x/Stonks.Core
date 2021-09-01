@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using Fergun.Interactive;
 using Interactivity;
 using Microsoft.Extensions.DependencyInjection;
 using Stonks.Core.Rewrite.Class;
@@ -42,7 +41,6 @@ namespace Stonks.Core.Rewrite.Service
             return new ServiceCollection()
                 .AddSingleton<CommandHandlingService>()
                 .AddSingleton<InteractivityService>()
-                .AddSingleton<InteractiveService>()
                 .AddSingleton<DiscordSocketClient>(x => ActivatorUtilities.CreateInstance<DiscordSocketClient>(x, new DiscordSocketConfig { LogLevel = LogSeverity.Debug, AlwaysAcknowledgeInteractions = false }))
                 .AddSingleton<CommandService>(x => ActivatorUtilities.CreateInstance<CommandService>(x, new CommandServiceConfig { DefaultRunMode = RunMode.Async, LogLevel = LogSeverity.Debug }))
                 .AddSingleton<ReactService>()
