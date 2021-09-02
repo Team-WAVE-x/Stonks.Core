@@ -31,7 +31,7 @@ namespace Stonks.Core.Rewrite.Command.Hentai
 
             try
             {
-                result = await booru.GetRandomPostAsync(tags.Split(null));
+                result = await booru.GetRandomPostAsync(tags?.Split(null));
             }
             catch (HttpRequestException)
             {
@@ -59,12 +59,13 @@ namespace Stonks.Core.Rewrite.Command.Hentai
             embed.WithTimestamp(DateTimeOffset.Now);
 
             var message = await Context.Channel.SendMessageAsync(embed: embed.Build()); //메시지 전송하고 객체 캡처
+            var tagMessage = await Context.Channel.SendMessageAsync($"태그: `{string.Join(", ", result.Tags)}`"); //태그 메시지도 전송하고 캡처
 
             //반응시 실행할 대리자들
             Action nextAction = async delegate
             {
                 var booru = new BooruSharp.Booru.Gelbooru();
-                var result = await booru.GetRandomPostAsync(tags.Split(null));
+                result = await booru.GetRandomPostAsync(tags?.Split(null));
 
                 var embed = new EmbedBuilder();
                 embed.WithTitle("Gelbooru");
@@ -81,11 +82,7 @@ namespace Stonks.Core.Rewrite.Command.Hentai
                 embed.WithTimestamp(DateTimeOffset.Now);
 
                 await message.ModifyAsync(msg => msg.Embed = embed.Build());
-            };
-
-            Action tagAction = async delegate
-            {
-                await Context.Channel.SendMessageAsync($"태그: `{string.Join(", ", result.Tags)}`");
+                await tagMessage.ModifyAsync(msg => msg.Content = $"태그: `{string.Join(", ", result.Tags)}`");
             };
 
             Action closeAction = async delegate
@@ -96,7 +93,6 @@ namespace Stonks.Core.Rewrite.Command.Hentai
             var dictionary = new Dictionary<IEmote, Action>
             {
                 { new Emoji("▶️"), nextAction },
-                { new Emoji("🏷"), tagAction },
                 { new Emoji("🛑"), closeAction }
             };
 
