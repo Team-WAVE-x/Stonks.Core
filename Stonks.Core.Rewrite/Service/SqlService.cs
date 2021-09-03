@@ -23,9 +23,11 @@ namespace Stonks.Core.Rewrite.Service
         /// <param name="userid">추가할 유저 아이디</param>
         public User AddNewUser(ulong guildId, ulong userId)
         {
+            User user = null;
+
             try
             {
-                long insertedId;
+                long insertedId = 0;
 
                 using (MySqlConnection _connection = new MySqlConnection(_setting.Config.ConnectionString))
                 {
@@ -45,7 +47,7 @@ namespace Stonks.Core.Rewrite.Service
                     _connection.Close();
                 }
 
-                return new User(
+                user = new User(
                     id: Convert.ToUInt64(insertedId),
                     guildId: guildId,
                     userId: userId,
@@ -58,14 +60,15 @@ namespace Stonks.Core.Rewrite.Service
                 {
                     case MySqlErrorCode.NoSuchTable:
                         AddNewGuild(guildId);
+                        user = AddNewUser(guildId, userId);
                         break;
 
                     default:
                         throw new Exception($"처리되지 못한 예외가 발생하였습니다. ({ex.Number}, {ex.Message})");
                 }
-
-                return null;
             }
+
+            return user;
         }
 
         /// <summary>
@@ -150,7 +153,7 @@ namespace Stonks.Core.Rewrite.Service
                 {
                     case MySqlErrorCode.NoSuchTable:
                         AddNewGuild(guildId);
-                        users = new List<User>();
+                        users = GetRanking(guildId, limit);
                         break;
 
                     default:
@@ -186,19 +189,21 @@ namespace Stonks.Core.Rewrite.Service
 
                         using (MySqlDataReader reader = sqlCom.ExecuteReader())
                         {
-                            if (!reader.HasRows)
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    user = new User(
+                                        id: Convert.ToUInt64(reader["_ID"]),
+                                        guildId: guildId,
+                                        userId: Convert.ToUInt64(reader["USERID"]),
+                                        coin: Convert.ToUInt64(reader["MONEY"])
+                                    );
+                                }
+                            }
+                            else
                             {
                                 user = AddNewUser(guildId, userId);
-                            }
-
-                            while (reader.Read())
-                            {
-                                user = new User(
-                                    id: Convert.ToUInt64(reader["_ID"]),
-                                    guildId: guildId,
-                                    userId: Convert.ToUInt64(reader["USERID"]),
-                                    coin: Convert.ToUInt64(reader["MONEY"])
-                                );
                             }
                         }
                     }
@@ -212,6 +217,7 @@ namespace Stonks.Core.Rewrite.Service
                 {
                     case MySqlErrorCode.NoSuchTable:
                         AddNewGuild(guildId);
+                        user = GetUser(guildId, userId);
                         break;
 
                     default:

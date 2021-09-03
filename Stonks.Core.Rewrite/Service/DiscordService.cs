@@ -42,9 +42,9 @@ namespace Stonks.Core.Rewrite.Service
                 .AddSingleton<CommandHandlingService>()
                 .AddSingleton<InteractivityService>()
                 .AddSingleton<DiscordSocketClient>(x => ActivatorUtilities.CreateInstance<DiscordSocketClient>(x, new DiscordSocketConfig { LogLevel = LogSeverity.Debug, AlwaysAcknowledgeInteractions = false }))
+                .AddSingleton<InteractivityConfig>(new InteractivityConfig { DefaultTimeout = TimeSpan.FromMinutes(1) })
                 .AddSingleton<CommandService>(x => ActivatorUtilities.CreateInstance<CommandService>(x, new CommandServiceConfig { DefaultRunMode = RunMode.Async, LogLevel = LogSeverity.Debug }))
                 .AddSingleton<ReactService>()
-                .AddSingleton(new InteractivityConfig { DefaultTimeout = TimeSpan.FromMinutes(1) })
                 .AddSingleton<SqlService>()
                 .AddSingleton<Setting>()
                 .BuildServiceProvider();
