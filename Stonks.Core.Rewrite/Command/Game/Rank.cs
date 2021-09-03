@@ -42,9 +42,13 @@ namespace Stonks.Core.Rewrite.Command.Game
                     var user = await Context.Client.Rest.GetUserAsync(ranking[i].UserId);
 
                     if (ranking[i].UserId == Context.User.Id)
+                    {
                         embed.AddField($"{i + 1}등", $"**{user.Username}#{user.Discriminator}** - `{string.Format("{0:n0}", ranking[i].Coin)}` 코인");
+                    }
                     else
+                    {
                         embed.AddField($"{i + 1}등", $"{user.Username}#{user.Discriminator} - `{string.Format("{0:n0}", ranking[i].Coin)}` 코인");
+                    }
                 }
             }
 

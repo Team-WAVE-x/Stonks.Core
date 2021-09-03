@@ -1,21 +1,12 @@
 ﻿using Discord;
 using System;
 using System.Collections.Generic;
+using static Stonks.Core.Rewrite.Enum.SlotmachineItem;
 
-namespace Stonks.Core.Rewrite.Class
+namespace Stonks.Core.Rewrite.Utility
 {
     public class SlotmachineUtility
     {
-        public enum Item
-        {
-            Melon,
-            Cherry,
-            Lemon,
-            Star,
-            Bell,
-            Seven
-        }
-
         public static Emoji EnumToEmoji(Item item)
         {
             var items = new Dictionary<Item, Emoji>()

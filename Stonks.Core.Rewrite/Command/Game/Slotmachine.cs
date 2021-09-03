@@ -5,8 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Discord;
-using Stonks.Core.Rewrite.Class;
 using Stonks.Core.Rewrite.Precondition;
+using Stonks.Core.Rewrite.Utility;
+using Stonks.Core.Rewrite.Enum;
 
 namespace Stonks.Core.Rewrite.Command.Game
 {
@@ -48,7 +49,7 @@ namespace Stonks.Core.Rewrite.Command.Game
             }
 
             //게임 로직 시작
-            var items = new List<SlotmachineUtility.Item>();
+            var items = new List<SlotmachineItem.Item>();
 
             for (int i = 0; i < 3; i++)
             {
