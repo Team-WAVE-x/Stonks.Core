@@ -17,11 +17,11 @@ namespace Stonks.Core.Rewrite.Precondition
             _errorMessage = errorMessage;
         }
 
-        private List<DateTimeOffset> stackCooldownTimer = new List<DateTimeOffset>();
-        private List<SocketGuildUser> stackCooldownTarget = new List<SocketGuildUser>();
-
         public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
+            var stackCooldownTimer = new List<DateTimeOffset>();
+            var stackCooldownTarget = new List<SocketGuildUser>();
+
             if (stackCooldownTarget.Contains(context.User as SocketGuildUser))
             {
                 if (stackCooldownTimer[stackCooldownTarget.IndexOf(context.Message.Author as SocketGuildUser)].AddSeconds(_cooldownLength) >= DateTimeOffset.Now)

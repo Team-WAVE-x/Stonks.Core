@@ -9,7 +9,7 @@ namespace Stonks.Core.Rewrite.Utility
     {
         public static Emoji EnumToEmoji(Item item)
         {
-            var items = new Dictionary<Item, Emoji>()
+            var items = new Dictionary<Item, Emoji>
             {
                 { Item.Melon, new Emoji("\U0001f348") },
                 { Item.Cherry, new Emoji("\U0001f352") },

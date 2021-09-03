@@ -11,8 +11,8 @@ namespace Stonks.Core.Rewrite.Service
 {
     public class CommandHandlingService
     {
-        private Setting _setting;
-        private CommandService _command;
+        private readonly Setting _setting;
+        private readonly CommandService _command;
         private IServiceProvider _service;
         private DiscordSocketClient _client;
 
