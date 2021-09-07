@@ -93,7 +93,7 @@ namespace Stonks.Core.Rewrite.Command.Hentai
                 { new Emoji("🛑"), closeAction }
             };
 
-            _react.AddReactionMessage(message, Context.User.Id, Context.Guild.Id, dictionary, TimeSpan.FromSeconds(10));
+            _react.AddReactionMessage(message, Context.User.Id, Context.Guild.Id, dictionary, TimeSpan.FromMinutes(5));
         }
     }
 }
