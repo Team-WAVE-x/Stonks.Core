@@ -58,7 +58,7 @@ namespace Stonks.Core.Rewrite.Command.Hentai
             var message = await Context.Channel.SendMessageAsync(embed: embed.Build()); //메시지 전송하고 객체 캡처
             var tagMessage = await Context.Channel.SendMessageAsync($"태그: `{string.Join(", ", result.Tags)}`"); //태그 메시지도 전송하고 캡처
 
-            //반응시 실행할 대리자들
+            #region ReactMessage Delegate
             Action nextAction = async delegate
             {
                 var booru = new BooruSharp.Booru.Gelbooru();
@@ -86,6 +86,7 @@ namespace Stonks.Core.Rewrite.Command.Hentai
             {
                 _react.RemoveReactionMessage(message.Id);
             };
+            #endregion
 
             var dictionary = new Dictionary<IEmote, Action>
             {

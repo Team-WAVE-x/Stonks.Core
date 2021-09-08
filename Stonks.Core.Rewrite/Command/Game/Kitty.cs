@@ -39,7 +39,7 @@ namespace Stonks.Core.Rewrite.Command.Game
 
             var message = await Context.Channel.SendMessageAsync(embed: embed.Build());
 
-            //반응시 실행할 대리자들
+            #region ReactMessage Delegate
             Action nextAction = async delegate
             {
                 var client = new WebClient();
@@ -63,6 +63,7 @@ namespace Stonks.Core.Rewrite.Command.Game
             {
                 _react.RemoveReactionMessage(message.Id);
             };
+            #endregion
 
             var dictionary = new Dictionary<IEmote, Action>
             {
