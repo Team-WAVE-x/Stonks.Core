@@ -24,7 +24,7 @@ namespace Stonks.Core.Rewrite.Service
             _client = service.GetRequiredService<DiscordSocketClient>();
 
             _client.MessageReceived += OnClientMessage;
-            _command.Log += new LoggingService().OnCommandLogReceived;
+            _command.Log += new LoggingService().OnLogReceived;
             _command.CommandExecuted += OnCommandExecuted;
         }
 

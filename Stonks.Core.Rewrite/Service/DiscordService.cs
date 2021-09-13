@@ -26,8 +26,8 @@ namespace Stonks.Core.Rewrite.Service
         public async Task MainAsync()
         {
             _setting.GetConfig($"{AppDomain.CurrentDomain.BaseDirectory}\\Setting.json");
-            _client.Log += new LoggingService().OnClientLogReceived;
-            _service.GetRequiredService<CommandService>().Log += new LoggingService().OnClientLogReceived;
+            _client.Log += new LoggingService().OnLogReceived;
+            _service.GetRequiredService<CommandService>().Log += new LoggingService().OnLogReceived;
 
             await _client.LoginAsync(TokenType.Bot, _setting.Config.Token);
             await _client.StartAsync();
