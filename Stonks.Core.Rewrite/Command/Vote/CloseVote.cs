@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Stonks.Core.Rewrite.Command.Stat
+namespace Stonks.Core.Rewrite.Command.Vote
 {
-    class CounterStrikeStat
+    class CloseVote
     {
     }
 }
